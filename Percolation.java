@@ -4,7 +4,6 @@
  *  Description:
  **************************************************************************** */
 
-import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
@@ -49,12 +48,6 @@ public class Percolation {
 
         sites[row - 1][col - 1] = new Cell();
         this.openSites++;
-        if (percolates()) {
-            StdOut.printf("%nThe System percolates %n");
-        }
-        else {
-            StdOut.printf("%nDoes not percolate %n");
-        }
 
         //merge imaginary sites
         if (row == 1) {
@@ -63,7 +56,7 @@ public class Percolation {
         }
 
         if (row == this.dimension)
-            unionFind.union(this.top, flattenedSite);
+            unionFind.union(this.bottom, flattenedSite);
 
         //merge components
         if (isValidSite(row + 1, col) && isOpen(row + 1, col)) {
@@ -87,6 +80,7 @@ public class Percolation {
     // is the site (row, col) open?
     public boolean isOpen(int row, int col) {
         if (isValidSite(row, col)) {
+
             return sites[row - 1][col - 1] != null;
         }
         else {
@@ -97,21 +91,13 @@ public class Percolation {
     // is the site (row, col) full?
     public boolean isFull(int row, int col) {
 
-        // row = row - 1;
-        // col = col - 1;
         validateSite(row, col);
         return unionFindFull.connected(this.top, flattenMatrix(row, col) - 1);
     }
 
     // returns the number of open sites
     public int numberOfOpenSites() {
-        // int count = 0;
-        // for (int i = 0; i < sites.length; i++) {
-        //     for (int j = 0; j < sites.length; j++) {
-        //         if (sites[i][j] != null) count++;
-        //     }
-        // }
-        // return count;
+
         return this.openSites;
     }
 
