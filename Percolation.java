@@ -4,6 +4,7 @@
  *  Description:
  **************************************************************************** */
 
+import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
@@ -48,6 +49,12 @@ public class Percolation {
 
         sites[row - 1][col - 1] = new Cell();
         this.openSites++;
+        if (percolates()) {
+            StdOut.printf("%nThe System percolates %n");
+        }
+        else {
+            StdOut.printf("%nDoes not percolate %n");
+        }
 
         //merge imaginary sites
         if (row == 1) {
@@ -77,35 +84,14 @@ public class Percolation {
         }
     }
 
-    private void propogateFull(int row, int col) {
-
-        if (row < 0 || row >= dimension) return;
-        if (col < 0 || col >= dimension) return;
-        // if (!isOpen(row, col)) return;
-        // if (isFull(row, col)) return;
-        System.out.println("row: " + row + " " + "col: " + col);
-
-
-        // if (isOpen(row, col)) {
-        //     row = row - 1;
-        //     col = col - 1;
-        //     sites[row][col].full = true;
-        // }
-        // row = row - 1;
-        // col = col - 1;
-        if (row + 1 < dimension && isOpen(row + 1, col)) propogateFull(row + 1, col);
-        if (col + 1 < dimension && isOpen(row, col + 1)) propogateFull(row, col + 1);
-
-        if (col - 1 >= 0 && isOpen(row, col - 1)) propogateFull(row, col - 1);
-        if (row - 1 >= 0 && isOpen(row - 1, col)) propogateFull(row - 1, col);
-    }
-
     // is the site (row, col) open?
     public boolean isOpen(int row, int col) {
-        validateSite(row, col);
-        row = row - 1;
-        col = col - 1;
-        return sites[row][col] != null;
+        if (isValidSite(row, col)) {
+            return sites[row - 1][col - 1] != null;
+        }
+        else {
+            return false;
+        }
     }
 
     // is the site (row, col) full?
@@ -136,7 +122,7 @@ public class Percolation {
     public boolean isValidSite(int row, int col) {
         row = row - 1;
         col = col - 1;
-        return (row <= this.dimension || col <= this.dimension || row >= 0 || col >= 0);
+        return (row < this.dimension && col < this.dimension && row >= 0 && col >= 0);
     }
 
     private void validateSite(int row, int col) {
