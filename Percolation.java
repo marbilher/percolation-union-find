@@ -8,9 +8,8 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
 
-    public Cell[][] sites;
+    private Cell[][] sites;
     private final WeightedQuickUnionUF unionFind;
-    private final WeightedQuickUnionUF unionFindFull;
     private final int top;
     private final int bottom;
     private final int dimension;
@@ -31,7 +30,6 @@ public class Percolation {
         sites = new Cell[n][n];
         this.dimension = n;
         this.unionFind = new WeightedQuickUnionUF(n * n + 2);
-        this.unionFindFull = new WeightedQuickUnionUF(n * n + 1);
         this.top = n * n;
         this.bottom = n * n + 1;
         this.openSites = 0;
@@ -52,7 +50,6 @@ public class Percolation {
         //merge imaginary sites
         if (row == 1) {
             unionFind.union(this.top, flattenedSite);
-            unionFindFull.union(this.top, flattenedSite);
         }
 
         if (row == this.dimension)
@@ -61,19 +58,15 @@ public class Percolation {
         //merge components
         if (isValidSite(row + 1, col) && isOpen(row + 1, col)) {
             unionFind.union(flattenedSite, flattenMatrix(row + 1, col) - 1);
-            unionFindFull.union(flattenedSite, flattenMatrix(row + 1, col) - 1);
         }
         if (isValidSite(row - 1, col) && isOpen(row - 1, col)) {
             unionFind.union(flattenedSite, flattenMatrix(row - 1, col) - 1);
-            unionFindFull.union(flattenedSite, flattenMatrix(row - 1, col) - 1);
         }
         if (isValidSite(row, col + 1) && isOpen(row, col + 1)) {
             unionFind.union(flattenedSite, flattenMatrix(row, col + 1) - 1);
-            unionFindFull.union(flattenedSite, flattenMatrix(row, col + 1) - 1);
         }
         if (isValidSite(row, col - 1) && isOpen(row, col - 1)) {
             unionFind.union(flattenedSite, flattenMatrix(row, col - 1) - 1);
-            unionFindFull.union(flattenedSite, flattenMatrix(row, col - 1) - 1);
         }
     }
 
@@ -92,7 +85,7 @@ public class Percolation {
     public boolean isFull(int row, int col) {
 
         validateSite(row, col);
-        return unionFindFull.connected(this.top, flattenMatrix(row, col) - 1);
+        return unionFind.find(this.top) == unionFind.find(flattenMatrix(row, col) - 1);
     }
 
     // returns the number of open sites
@@ -105,7 +98,7 @@ public class Percolation {
         return this.dimension * (row - 1) + col;
     }
 
-    public boolean isValidSite(int row, int col) {
+    private boolean isValidSite(int row, int col) {
         row = row - 1;
         col = col - 1;
         return (row < this.dimension && col < this.dimension && row >= 0 && col >= 0);
@@ -117,19 +110,9 @@ public class Percolation {
         }
     }
 
-
     // does the system percolate?
     public boolean percolates() {
-        return unionFind.connected(this.top, this.bottom);
-    }
-
-    public static void main(String[] args) {
-
-        // Percolation test = new Percolation(10);
-        // test.open(0, 1);
-        // System.out.println("foo:" + test.sites[0][0] + test.numberOfOpenSites());
-
-
+        return unionFind.find(this.top) == unionFind.find(this.bottom);
     }
 
 }
